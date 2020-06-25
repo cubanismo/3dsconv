@@ -1,0 +1,19 @@
+#
+# Makefile for 3dsconv
+# DOS/DJGPP version
+
+RM = rm -f
+CC = gcc
+CFLAGS = -O2 -Wall
+TARGET = 3dsconv.exe
+
+OBJS = 3dsconv.o internal.o n3dout.o jagout.o cry.o targa.o
+LIBS = -lm
+
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -o 3dsconv $(OBJS) $(LIBS)
+	coff2exe 3dsconv 3dsconv.exe
+	$(RM) 3dsconv
+
+clean:
+	$(RM) $(OBJS)
