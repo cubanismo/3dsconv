@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdint.h>
 
 #ifdef __DUMB_MSDOS__
 #include <alloc.h>
@@ -33,13 +34,13 @@ typedef struct color {
 } COLOR;
 
 /* local functions */
-static int buildsurfinfo(char *, char *);
-static float getfloat(char *);
-static unsigned short getshort(void *);
-static unsigned long getlong(void *);
-static char *getchunk(unsigned char *, unsigned char *, char *, long *);
-static char *getsubchunk(unsigned char *, unsigned char *, char *, long *);
-static char *get3dpoint(char *, double *, double *, double *);
+static int buildsurfinfo(uint8_t *, uint8_t *);
+static float getfloat(uint8_t *);
+static uint16_t getshort(void *);
+static uint32_t getlong(void *);
+static uint8_t *getchunk(uint8_t *, uint8_t *, char *, long *);
+static uint8_t *getsubchunk(uint8_t *, uint8_t *, char *, long *);
+static uint8_t *get3dpoint(uint8_t *, double *, double *, double *);
 
 /*
  *	read lightwave file into internal format
@@ -52,9 +53,9 @@ readlwfile(fname)
 {
 	FILE *fp;
 	long length;
-	char *fbuf, *fbufend;	/* pointers to start and end of FORM chunk */
+	uint8_t *fbuf, *fbufend;	/* pointers to start and end of FORM chunk */
 	long fbufsize;
-	char *mdata, *mdataend;	/* pointers to start and end of other chunks */
+	uint8_t *mdata, *mdataend;	/* pointers to start and end of other chunks */
 	int i, numpolys;
 	Vertex vert;
 	Polygon poly;
@@ -68,7 +69,7 @@ readlwfile(fname)
 	fbufsize = ftell(fp);
 	fseek(fp, 0L, 0);	/* rewind */
 
-	if ((fbuf = (char *) mymalloc(fbufsize)) == NULL) {	/* get buffer */
+	if ((fbuf = (uint8_t *) mymalloc(fbufsize)) == NULL) {	/* get buffer */
 		fprintf(stderr, "%s: insufficient memory for loading Lightwave file\n",
 			progname);
 		return -1;
@@ -87,7 +88,7 @@ readlwfile(fname)
 	/*
 	 * check that it's a FORM LWOB IFF file
 	 */
-	if (strncmp(fbuf, "FORM", 4) != 0) {
+	if (strncmp((char *)fbuf, "FORM", 4) != 0) {
 		fprintf(stderr,"%s: %s is not a valid LWOB file.\n", progname, fname);
 		return -1;
 	}
@@ -96,7 +97,7 @@ readlwfile(fname)
 	fbuf += 4;
 	fbufend = fbuf + length;
 
-	if (strncmp(fbuf, "LWOB", 4) != 0) {
+	if (strncmp((char *)fbuf, "LWOB", 4) != 0) {
 		fprintf(stderr,"%s: %s is not a valid LWOB file.\n", progname, fname);
 		return -1;
 	}
@@ -217,11 +218,11 @@ readlwfile(fname)
  */
 static int
 buildsurfinfo(fbuf, fbufend)
-	char *fbuf;	/* start of form chunk */
-	char *fbufend;	/* ...and its end */
+	uint8_t *fbuf;	/* start of form chunk */
+	uint8_t *fbufend;	/* ...and its end */
 {
-	char *mdata, *mdataend;		/* start and end of SURF chunk */
-	char *scstart, *scend;		/* start and end of subchunks */
+	uint8_t *mdata, *mdataend;      /* start and end of SURF chunk */
+	uint8_t *scstart;               /* start and end of subchunks */
 	long length;
 	Material mat;
 	Material *oldmat;
@@ -241,7 +242,7 @@ buildsurfinfo(fbuf, fbufend)
 
 	while (mdata < mdataend) {
 		length = 0;
-		mat.name = strdup(mdata);
+		mat.name = strdup((char *)mdata);
 printf("Creating material %s\n", mat.name);
 		AddMaterial(&mat);
 		/* skip this material's name */
@@ -260,7 +261,7 @@ printf("Creating material %s\n", mat.name);
 		if (!mdata) break;
 printf("Getting material data for %s\n", mdata);
 		fbuf = mdataend = mdata + length;
-		oldmat = &mattab[GetMaterial(mdata)];
+		oldmat = &mattab[GetMaterial((char *)mdata)];
 		if (!oldmat)
 			return -1;	/* material not found? (probably can't happen) */
 		/* skip over the name */
@@ -288,13 +289,13 @@ printf("Getting material data for %s\n", mdata);
  */
 static	float
 getfloat(p)
-	char *p;
+	uint8_t *p;
 {
 	float *flp;
 
-	*((long *)p) = getlong((char *)p);	/* looks weird, but we don't want */
+	*((uint32_t *)p) = getlong((char *)p);	/* looks weird, but we don't want */
 	flp = (float *) p;			/* the compiler to tranfer the     */
-						/* float to a long                 */
+						/* float to a uint32_t                 */
 	return *flp;
 }
 
@@ -302,7 +303,7 @@ getfloat(p)
 /*	
  *	word & long swap
  */
-static unsigned short
+static uint16_t
 getshort(void *p0)
 {
 	unsigned char *p = p0;
@@ -310,13 +311,13 @@ getshort(void *p0)
 	return (((unsigned short)p[0] << 8) | (p[1]));
 }
 
-static unsigned long
+static uint32_t
 getlong(void *p0)
 {
 	unsigned char *p = p0;
-	unsigned long d;
+	uint32_t d;
 
-	d = (((unsigned long)p[0] << 24)|((unsigned long)p[1] << 16)|((unsigned short)p[2] << 8) | p[3]);
+	d = (((uint32_t)p[0] << 24)|((uint32_t)p[1] << 16)|((uint16_t)p[2] << 8) | p[3]);
 
 	return d;
 }
@@ -325,13 +326,13 @@ getlong(void *p0)
  *	get a specific chunk
  */
 
-static char
+static uint8_t
 *getchunk(fbp, fbend, id, length)
-	unsigned char *fbp, *fbend;		/* start & end of buffer */
+	uint8_t *fbp, *fbend;		/* start & end of buffer */
 	char *id;			     	/* 4 byte chunk id */
 	long * length;		     		/* return size of chunk in here */
 {
-	long chunklen = 0L;
+	int32_t chunklen = 0L;
 	char *chunkid;
 
 #ifdef DEBUGCHUNK
@@ -360,13 +361,13 @@ fprintf(stderr, "\tlooked at %04s\n", chunkid);
  * only have a 2 byte length instead of 4 bytes
  */
 
-static char
+static uint8_t
 *getsubchunk(fbp, fbend, id, length)
-	unsigned char *fbp, *fbend;		/* start & end of buffer */
+	uint8_t *fbp, *fbend;		/* start & end of buffer */
 	char *id;			     	/* 4 byte chunk id */
 	long * length;		     		/* return size of chunk in here */
 {
-	long chunklen = 0L;
+	int32_t chunklen = 0;
 	char *chunkid;
 
 #ifdef DEBUGCHUNK
@@ -391,9 +392,9 @@ fprintf(stderr, "\tlooked at %04s\n", chunkid);
 }
 
 
-static char
+static uint8_t
 *get3dpoint(p, x, y, z)
-	char *p;		/* data stream pointer */
+	uint8_t *p;		/* data stream pointer */
 	double *x, *y, *z;
 {
 	*x =  (getfloat(p) / scale);

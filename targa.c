@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 #include "internal.h"
 #include "proto.h"
 
@@ -88,8 +89,8 @@ read_norm_pixel(FILE *fhandle, Pixel *place)
 int
 read_targa( Material *mat, int colrflag )
 {
-	unsigned long red, green, blue;
-	unsigned long numpixels;
+	uint32_t red, green, blue;
+	uint32_t numpixels;
 	int bytes_in_name;
 	int cmap_type;
 	int sub_type;
@@ -184,7 +185,7 @@ read_targa( Material *mat, int colrflag )
 		}
 	}
 
-	numpixels = image_w * (unsigned long)image_h;
+	numpixels = image_w * (uint32_t)image_h;
 	red = green = blue = 0;
 	while (numpixels > 0) {
 		read_pixel(fhandle, &pix);
@@ -193,7 +194,7 @@ read_targa( Material *mat, int colrflag )
 		green += pix.green;
 		--numpixels;
 	}
-	numpixels = image_w * (unsigned long)image_h;
+	numpixels = image_w * (uint32_t)image_h;
 
 	mat->red = red/numpixels;
 	mat->green = green/numpixels;

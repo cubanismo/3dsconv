@@ -13,6 +13,8 @@
 #include <string.h>
 #include <ctype.h>
 #include <math.h>
+#include <stdint.h>
+#include <inttypes.h>
 
 #ifdef __DUMB_MSDOS__
 #include <alloc.h>
@@ -38,15 +40,15 @@ extern int	multiobject;		/* output multiple objects? */
 extern int	animflag;		/* get animation data? */
 
 /* Global variables */
-char	*fbuf;				/* buffer for loading 3ds file, */
+uint8_t	*fbuf;				/* buffer for loading 3ds file, */
 					/* will be allocated */
-char	*fbufend;			/* pts to the end of the buffer */
+uint8_t	*fbufend;			/* pts to the end of the buffer */
 long	fbufsize;			/* size of the buffer */
 
-char	*mdata;				/* start of mesh data section */
-char	*mdataend;			/* end of mdata */
-char	*kfdata;			/* start of key frame data section */
-char	*kfdataend;
+uint8_t	*mdata;				/* start of mesh data section */
+uint8_t	*mdataend;			/* end of mdata */
+uint8_t	*kfdata;			/* start of key frame data section */
+uint8_t	*kfdataend;
 
 double	scale;				/* scale factor from 3DS file */
 
@@ -81,17 +83,17 @@ static const Matrix Identity = {
 };
 
 /* local functions */
-static void buildmatrecs(char *, char *);
-static COLOR *get3dscolor(unsigned char *p);
-static float getfloat(char *);
-static unsigned short getshort(void *);
-static unsigned long getlong(void *);
-static int buildfacerecs(char *, char *);
-static char *getntriobj(unsigned char *, unsigned char *, long *, Object **);
-static char *getchunk(unsigned char *, unsigned char *, unsigned, long *);
-static char *getchunkfromset(unsigned char *, unsigned char *, unsigned *, long *, unsigned *);
-static char *get3dpoint(char *, double *, double *, double *);
-static int buildkfdata(char *, char *);
+static void buildmatrecs(uint8_t *, uint8_t *);
+static COLOR *get3dscolor(uint8_t *p);
+static float getfloat(uint8_t *);
+static uint16_t getshort(void *);
+static uint32_t getlong(void *);
+static int buildfacerecs(uint8_t *, uint8_t *);
+static uint8_t *getntriobj(uint8_t *, uint8_t *, long *, Object **);
+static uint8_t *getchunk(uint8_t *, uint8_t *, unsigned, long *);
+static uint8_t *getchunkfromset(uint8_t*, uint8_t *, unsigned *, long *, unsigned *);
+static uint8_t *get3dpoint(uint8_t *, double *, double *, double *);
+static int buildkfdata(uint8_t *, uint8_t *);
 
 /*
  *	read 3d studio file into internal format
@@ -105,7 +107,7 @@ read3dsfile(fname)
 	FILE *fp;
 	unsigned short version;
 	long length;
-	char *p;
+	uint8_t *p;
 
 	if ((fp = fopen(fname, "rb")) == NULL) {
 		perror(fname);
@@ -115,7 +117,7 @@ read3dsfile(fname)
 	fbufsize = ftell(fp);
 	fseek(fp, 0L, 0);	/* rewind */
 
-	if ((fbuf = (char *) mymalloc(fbufsize)) == NULL) {	/* get buffer */
+	if ((fbuf = (uint8_t *) mymalloc(fbufsize)) == NULL) {	/* get buffer */
 		fprintf(stderr, "%s: insufficient memory for loading 3DS file\n",
 			progname);
 		return -1;
@@ -187,17 +189,17 @@ read3dsfile(fname)
  */
 static void
 buildmatrecs(mstart, mend)
-	char *mstart;	/* start of mdata section */
-	char *mend;	/* ...and its end */
+	uint8_t *mstart;	/* start of mdata section */
+	uint8_t *mend;	/* ...and its end */
 {
 	long length;
-	char *mat, *matend;
+	uint8_t *mat, *matend;
 	char *matname;			/* material name */
-	char *color;			/* color chunk */
+	uint8_t *color;			/* color chunk */
 	COLOR *cptr;
 	Material matrec;
 
-	char *texmap, *texmapend;
+	uint8_t *texmap, *texmapend;
 	char *texmapname;
 
 	if (verbose)
@@ -208,7 +210,7 @@ buildmatrecs(mstart, mend)
 			break;
 		}
 	 	mstart = matend = mat + length;
-		if ((matname = getchunk(mat, matend, MAT_NAME, &length)) == NULL) {
+		if ((matname = (char *)getchunk(mat, matend, MAT_NAME, &length)) == NULL) {
 			break;
 		}	
 		if ((color = getchunk(mat, matend, MAT_DIFFUSE, &length)) == NULL) {
@@ -225,7 +227,7 @@ buildmatrecs(mstart, mend)
 		if (texmap) {
 			texmapend = texmap+length;
 			/* get texture file name */
-			texmapname = getchunk(texmap, texmapend, MAT_MAPNAME, &length);
+			texmapname = (char *)getchunk(texmap, texmapend, MAT_MAPNAME, &length);
 		} else {
 			texmapname = (char *)0;
 		}
@@ -277,17 +279,17 @@ static COLOR
 }
 
 /*
- *	get a 32 bit float from a long pointer (byte swapped)
+ *	get a 32 bit float from a uint32_t pointer (byte swapped)
  */
 static	float
 getfloat(p)
-	char *p;
+	uint8_t *p;
 {
 	float *flp;
 
-	*((long *)p) = getlong((char *)p);	/* looks weird, but we don't want */
+	*((uint32_t *)p) = getlong(p);	/* looks weird, but we don't want */
 	flp = (float *) p;			/* the compiler to tranfer the     */
-						/* float to a long                 */
+						/* float to a uint32_t                 */
 	return *flp;
 }
 
@@ -295,21 +297,21 @@ getfloat(p)
 /*	
  *	word & long swap
  */
-static unsigned short
+static uint16_t
 getshort(void *p0)
 {
 	unsigned char *p = p0;
 
-	return (((unsigned short)p[1] << 8) | (p[0]));
+	return (((uint16_t)p[1] << 8) | (p[0]));
 }
 
-static unsigned long
+static uint32_t
 getlong(void *p0)
 {
 	unsigned char *p = p0;
-	unsigned long d;
+	uint32_t d;
 
-	d = (((unsigned long)p[3] << 24)|((unsigned long)p[2] << 16)|((unsigned short)p[1] << 8) | p[0]);
+	d = (((uint32_t)p[3] << 24)|((uint32_t)p[2] << 16)|((uint16_t)p[1] << 8) | p[0]);
 
 	return d;
 }
@@ -319,14 +321,14 @@ getlong(void *p0)
  */
 static int
 buildfacerecs(mstart, mend)
-	char *mstart;	/* start of mdata section */
-	char *mend;	/* ...and its end */
+	uint8_t *mstart;	/* start of mdata section */
+	uint8_t *mend;	/* ...and its end */
 {
 	int i;
 	long length;
-	char *ntri, *ntriend;		/* n-tri object */
-	char *face, *faceend;		/* face array chunk */
-	char *p;
+	uint8_t *ntri, *ntriend;		/* n-tri object */
+	uint8_t *face, *faceend;		/* face array chunk */
+	uint8_t *p;
 	Vertex vert;
 	Polygon poly;
 	int vertbase;			/* base of vertex list */
@@ -432,7 +434,7 @@ buildfacerecs(mstart, mend)
 		while ((p = getchunk(p, faceend, MSH_MAT_GROUP, &length)) != NULL) {
 			int curmat;
 
-			matname = p;
+			matname = (char *)p;
 			while (*p) p++;			/* skip name */
 			p++;				/* skip trailing 0 */
 			curmat = GetMaterial(matname);
@@ -473,16 +475,16 @@ buildfacerecs(mstart, mend)
 }
 
 
-static	char 
+static	uint8_t
 *getntriobj(mstart, mend, length, objptr)
-	unsigned char *mstart, *mend;
+	uint8_t *mstart, *mend;
 	long *length;
 	Object **objptr;
 {
 	int done;
-	char *nobj, *nobjend;		/* name object */
-	char *ntriobj;			/* n-tri object */
-	char *p;			/* points array */
+	uint8_t *nobj, *nobjend;	/* name object */
+	uint8_t *ntriobj;		/* n-tri object */
+	uint8_t *p;			/* points array */
 	int i;
 	char *objname;
 
@@ -499,7 +501,7 @@ static	char
 		}
 		p = nobj + *length;
 
-		objname = nobj;
+		objname = (char *)nobj;
 		for (i = 0; *nobj && (i < 512); i++) /* skip object's name */
 			nobj++;
 		nobj++;	i++;
@@ -526,13 +528,13 @@ static	char
  *	get a specific chunk
  */
 
-static char
+static uint8_t
 *getchunk(fbp, fbend, id, length)
-	unsigned char *fbp, *fbend;		/* start & end of buffer */
+	uint8_t *fbp, *fbend;		/* start & end of buffer */
 	unsigned id;			     	/* chunk id */
 	long * length;		     		/* return size of chunk in here */
 {
-	long chunklen = 0L;
+	int32_t chunklen = 0L;
 	unsigned chunkid;
 
 #ifdef DEBUGCHUNK
@@ -562,14 +564,14 @@ fprintf(stderr, "\tlooked at %04x\n", chunkid);
  * by an id of 0
  */
 
-static char
+static uint8_t
 *getchunkfromset(fbp, fbend, idset, length, foundid)
-	unsigned char *fbp, *fbend;		/* start & end of buffer */
+	uint8_t *fbp, *fbend;		/* start & end of buffer */
 	unsigned *idset;		     	/* chunk id set */
 	long * length;		     		/* return size of chunk in here */
 	unsigned *foundid;			/* return which id was found here */
 {
-	long chunklen = 0L;
+	uint32_t chunklen = 0L;
 	unsigned chunkid;
 	int i;
 
@@ -591,9 +593,9 @@ static char
 }
 
 
-static char
+static uint8_t
 *get3dpoint(p, x, y, z)
-	char *p;		/* data stream pointer */
+	uint8_t *p;		/* data stream pointer */
 	double *x, *y, *z;
 {
 	*x =  (getfloat(p));
@@ -892,17 +894,17 @@ B.xdown, B.ydown, B.zdown, B.xhead, B.yhead, B.zhead, B.xposn, B.yposn, B.zposn)
 }
 
 static int
-buildkfdata(char *kstart, char *kend)
+buildkfdata(uint8_t *kstart, uint8_t *kend)
 {
 	int i;
-	long numframes;
+	int32_t numframes;
 	long length;
-	long numkeys;
-	char *p;
-	char *onode, *onodeend;
+	int32_t numkeys;
+	uint8_t *p;
+	uint8_t *onode, *onodeend;
 	double x, y, z, angle;
 	double pivx, pivy, pivz;
-	long frame;
+	int32_t frame;
 	short splinebits;
 	int parent;
 	KFdata *kflist, *kfpar, *kfcur;
@@ -947,7 +949,7 @@ printf("Getting Object Node Chunks:\n");
 #ifdef DEBUG_KF
 			printf("Getting keyframe data for: %s\n", p);
 #endif
-		kfcur = NewKF(p, numframes);
+		kfcur = NewKF((char *)p, numframes);
 		AddKF(&kflist, kfcur, kfdatanum++);
 
 		p += length-2;		/* skip name and flags */
@@ -993,7 +995,7 @@ printf("  pivot: %f, %f, %f\n", pivx, pivy, pivz);
 				/* get key header */
 				frame = getlong(p);
 				if ((frame < 0) || (frame >= numframes)) {
-					fprintf(stderr, "ERROR: bad frame number (%ld) in keyframe data for `%s'\n",
+					fprintf(stderr, "ERROR: bad frame number (%" PRId32 ") in keyframe data for `%s'\n",
 						frame, kfcur->obj->name);
 					exit(1);
 				}

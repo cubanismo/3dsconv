@@ -173,7 +173,7 @@ writeanims(FILE *f, Object *obj)
 {
 	Matrix *M;
 	int i;
-	long x, y, z;
+	int32_t x, y, z;
 
 	fprintf(f, ".%s_anim:\n", name2label(obj->name));
 	fprintf(f, "\t.dc.w\t1, 0\t; frame animation\n");
