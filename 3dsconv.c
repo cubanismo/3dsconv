@@ -30,6 +30,10 @@
 #define myfree free
 #endif
 
+#ifndef _WIN32
+#define stricmp strcasecmp
+#endif
+
 #include "internal.h"
 #include "proto.h"
 
