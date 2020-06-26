@@ -1,0 +1,6 @@
+3dsconv
+3dsconv.exe
+*.o
+*.obj
+*~
+.*.swp
