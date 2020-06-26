@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <sys/types.h>
+#include <dirent.h>
 #include "internal.h"
 #include "proto.h"
 
@@ -104,14 +106,31 @@ read_targa( Material *mat, int colrflag )
 	int c, i;
 	static char infile[256];
 
-
 	strcpy(infile, filepath);
 	strcat(infile, mat->texmap);
 
 	fhandle = fopen(infile, "rb");
 	if (!fhandle) {
-		perror(infile);
-		return -1;
+#ifndef _WIN32
+		/* Do a case insensitive search for the file */
+		DIR *d = opendir(strlen(filepath) ? filepath : ".");
+		if (d) {
+			struct dirent *de;
+			for (de = readdir(d); de; de = readdir(d)) {
+				if (strcasecmp(mat->texmap, de->d_name)) continue;
+				/* Match. Reconstruct infile and retry open. */
+				strcpy(infile, filepath);
+				strcat(infile, de->d_name);
+				fhandle = fopen(infile, "rb");
+				break;
+			}
+			closedir(d);
+		}
+#endif
+		if (!fhandle) {
+			perror(infile);
+			return -1;
+		}
 	}
 
 	bytes_in_name = fgetc(fhandle);
