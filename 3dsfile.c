@@ -339,9 +339,10 @@ buildfacerecs(mstart, mend)
 	Object *curobj;
 	Matrix M;			/* orientation matrix */
 	extern char *defaultlabel;
+	extern int clabels;
 
 	if (!multiobject) {
-		curobj = CreateObject( defaultlabel );
+		curobj = CreateObject( clabels ? defaultlabel + 1 : defaultlabel );
 	}
 
 	for(;;) {

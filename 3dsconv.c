@@ -220,10 +220,10 @@ main(int argc, char **argv)
 
 		if (s) {
 			++s;
-			filelabel = strdup(s);
+			filelabel = name2label(s);
 			*s = 0;
 		} else {
-			filelabel = strdup(filepath);
+			filelabel = name2label(filepath);
 			*filepath = 0;
 		}
 		if (!defaultlabel) {
