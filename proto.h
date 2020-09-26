@@ -22,8 +22,8 @@ int readlwfile P_((char *fname));
 void AddMaterial P_((Material *mat));
 int GetMaterial P_((char *name));
 void AddVertex P_((Object *obj, Vertex *vert));
-void AddPolygon P_((Object *obj, Polygon *p));
-void CalcFaceNormal P_((Object *obj, Polygon *P));
+void AddPolygon P_((Object *obj, _Polygon *p));
+void CalcFaceNormal P_((Object *obj, _Polygon *P));
 void CalcVertexNormals P_((Object *obj));
 void MergeVertices P_((Object *obj));
 void MergeFaces P_((Object *obj));
@@ -33,7 +33,9 @@ Object *FindObject P_((char *name));
 Object *FixObjectLists P_((void));
 Matrix MMult(Matrix A, Matrix B);
 Matrix MatInv(Matrix M);
+#if !defined(atarist) && !defined(_WIN32)
 double rint P_((double));
+#endif
 
 /* jagout.c */
 int JAGwritefile P_((FILE *f, Object *));

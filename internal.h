@@ -27,7 +27,7 @@ typedef struct polygon {
 	int vert[MAXVERTICES];		/* vertex indicies, in clockwise order */
 	double u[MAXVERTICES];		/* texture coordinates (in same order as vertices) */
 	double v[MAXVERTICES];
-} Polygon;
+} _Polygon;
 
 
 
@@ -49,7 +49,7 @@ typedef struct object {
 	int numVerts;			/* number of vertices currently in table */
 	int maxVerts;			/* current size of vertex table */
 
-	Polygon *polytab;		/* face table for this object */
+	_Polygon *polytab;		/* face table for this object */
 	int numPolys;			/* number of faces currently in table */
 	int maxPolys;			/* current size of face table */
 

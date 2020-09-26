@@ -42,6 +42,10 @@ static uint8_t *getchunk(uint8_t *, uint8_t *, char *, long *);
 static uint8_t *getsubchunk(uint8_t *, uint8_t *, char *, long *);
 static uint8_t *get3dpoint(uint8_t *, double *, double *, double *);
 
+#ifdef _WIN32
+#define strdup _strdup
+#endif
+
 /*
  *	read lightwave file into internal format
  *	returns: 0 on success, otherwise -1
@@ -58,7 +62,7 @@ readlwfile(fname)
 	uint8_t *mdata, *mdataend;	/* pointers to start and end of other chunks */
 	int i, numpolys;
 	Vertex vert;
-	Polygon poly;
+	_Polygon poly;
 	Object *curobj;
 
 	if ((fp = fopen(fname, "rb")) == NULL) {

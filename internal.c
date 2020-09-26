@@ -14,6 +14,10 @@
 #define myfree free
 #endif
 
+#ifdef _WIN32
+#define strdup _strdup
+#endif
+
 #define EXTERN
 #include "internal.h"
 
@@ -94,13 +98,13 @@ AddVertex( Object *obj, Vertex *vert )
  */
 
 void
-AddPolygon( Object *obj, Polygon *p )
+AddPolygon( Object *obj, _Polygon *p )
 {
 	obj->numPolys++;
 	if (obj->numPolys > obj->maxPolys) {
 		/* expand the table */
 		obj->maxPolys += 64;
-		obj->polytab = myrealloc(obj->polytab, obj->maxPolys*sizeof(Polygon));
+		obj->polytab = myrealloc(obj->polytab, obj->maxPolys*sizeof(_Polygon));
 		if (!obj->polytab) {
 			fprintf(stderr, "FATAL ERROR: out of memory\n");
 			exit(2);
@@ -121,7 +125,7 @@ AddPolygon( Object *obj, Polygon *p )
  */
 
 void
-CalcFaceNormal(Object *obj, Polygon *P)
+CalcFaceNormal(Object *obj, _Polygon *P)
 {
 	int i;
 	Vertex *p0, *p1;	/* start and end points */
@@ -162,7 +166,7 @@ void
 CalcVertexNormals( Object *obj )
 {
 	int i, j;		/* loop counters */
-	Polygon *P;
+	_Polygon *P;
 	Vertex *V;
 	double length;
 
@@ -215,7 +219,7 @@ MergeVertices( Object *obj )
 {
 	int *pointmap;
 	int i, j;
-	Polygon *P;
+	_Polygon *P;
 	int newnumVerts;
 	Vertex *newverttab;
 
@@ -294,7 +298,7 @@ skippt:
  * they point in different directions, the polygon is not convex.
  */
 static int
-Convex( Vertex *verttab, Polygon *A )
+Convex( Vertex *verttab, _Polygon *A )
 {
 	Vertex *VA, *VB, *VC;
 	double vx, vy, vz;	/* cross product */
@@ -320,7 +324,7 @@ Convex( Vertex *verttab, Polygon *A )
 }
 
 static int
-CanMerge( Vertex *verttab, Polygon *A, Polygon *B, Polygon *Merged )
+CanMerge( Vertex *verttab, _Polygon *A, _Polygon *B, _Polygon *Merged )
 {
 	extern double facedelta;
 	double normdiff;
@@ -401,8 +405,8 @@ void
 MergeFaces( Object *obj )
 {
 	int i;
-	Polygon *FirstPoly, *NextPoly;
-	Polygon MergedPoly;
+	_Polygon *FirstPoly, *NextPoly;
+	_Polygon MergedPoly;
 	int mergedsome;
 	int oldnumPolys;
 
@@ -629,7 +633,7 @@ MatInv(Matrix M)
 	return MMult(B, A);
 }
 
-#ifndef atarist
+#if !defined(atarist) && !defined(_WIN32)
 double rint(double x)
 {
 	return floor( x + 0.5 );

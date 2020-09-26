@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include "internal.h"
 #include "proto.h"
+#include <stdint.h>
 
 extern int animflag;
 
@@ -75,7 +76,7 @@ writefaces(FILE *f, Object *obj)
 {
 	int i, j;
 	double fd;
-	Polygon *p;
+	_Polygon *p;
 	double *text_u, *text_v;
 	Vertex *verttab;
 

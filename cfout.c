@@ -51,7 +51,7 @@ writefaces(FILE *f, Object *obj)
 {
 	int i, j;
 	double fd;
-	Polygon *p;
+	_Polygon *p;
 	double *text_u, *text_v;
 	Vertex *verttab;
 
