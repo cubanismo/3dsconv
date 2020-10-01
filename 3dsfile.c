@@ -334,7 +334,7 @@ buildfacerecs(mstart, mend)
 	uint8_t *face, *faceend;		/* face array chunk */
 	uint8_t *p;
 	Vertex vert;
-	_Polygon poly;
+	Polygon poly;
 	int vertbase;			/* base of vertex list */
 	int polybase;			/* base of polygon list */
 	int numverts;

@@ -98,13 +98,13 @@ AddVertex( Object *obj, Vertex *vert )
  */
 
 void
-AddPolygon( Object *obj, _Polygon *p )
+AddPolygon( Object *obj, Polygon *p )
 {
 	obj->numPolys++;
 	if (obj->numPolys > obj->maxPolys) {
 		/* expand the table */
 		obj->maxPolys += 64;
-		obj->polytab = myrealloc(obj->polytab, obj->maxPolys*sizeof(_Polygon));
+		obj->polytab = myrealloc(obj->polytab, obj->maxPolys*sizeof(Polygon));
 		if (!obj->polytab) {
 			fprintf(stderr, "FATAL ERROR: out of memory\n");
 			exit(2);
@@ -125,7 +125,7 @@ AddPolygon( Object *obj, _Polygon *p )
  */
 
 void
-CalcFaceNormal(Object *obj, _Polygon *P)
+CalcFaceNormal(Object *obj, Polygon *P)
 {
 	int i;
 	Vertex *p0, *p1;	/* start and end points */
@@ -166,7 +166,7 @@ void
 CalcVertexNormals( Object *obj )
 {
 	int i, j;		/* loop counters */
-	_Polygon *P;
+	Polygon *P;
 	Vertex *V;
 	double length;
 
@@ -219,7 +219,7 @@ MergeVertices( Object *obj )
 {
 	int *pointmap;
 	int i, j;
-	_Polygon *P;
+	Polygon *P;
 	int newnumVerts;
 	Vertex *newverttab;
 
@@ -298,7 +298,7 @@ skippt:
  * they point in different directions, the polygon is not convex.
  */
 static int
-Convex( Vertex *verttab, _Polygon *A )
+Convex( Vertex *verttab, Polygon *A )
 {
 	Vertex *VA, *VB, *VC;
 	double vx, vy, vz;	/* cross product */
@@ -324,7 +324,7 @@ Convex( Vertex *verttab, _Polygon *A )
 }
 
 static int
-CanMerge( Vertex *verttab, _Polygon *A, _Polygon *B, _Polygon *Merged )
+CanMerge( Vertex *verttab, Polygon *A, Polygon *B, Polygon *Merged )
 {
 	extern double facedelta;
 	double normdiff;
@@ -405,8 +405,8 @@ void
 MergeFaces( Object *obj )
 {
 	int i;
-	_Polygon *FirstPoly, *NextPoly;
-	_Polygon MergedPoly;
+	Polygon *FirstPoly, *NextPoly;
+	Polygon MergedPoly;
 	int mergedsome;
 	int oldnumPolys;
 

@@ -42,7 +42,7 @@ static void
 writefaces(FILE *f, Object *obj)
 {
 	int i, j;
-	_Polygon *p;
+	Polygon *p;
 	int boxnum;
 
 	boxnum = tboxnum;
@@ -117,7 +117,7 @@ writetboxlist(FILE *f, Object *obj)
 {
 	int i, j;
 	int boxnum;			/* temporary copy of boxnum */
-	_Polygon *P;
+	Polygon *P;
 	double twidth, theight;
 
 	fprintf(f, ".tboxlist%s:\n", name2label(obj->name));

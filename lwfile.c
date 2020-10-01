@@ -62,7 +62,7 @@ readlwfile(fname)
 	uint8_t *mdata, *mdataend;	/* pointers to start and end of other chunks */
 	int i, numpolys;
 	Vertex vert;
-	_Polygon poly;
+	Polygon poly;
 	Object *curobj;
 
 	if ((fp = fopen(fname, "rb")) == NULL) {
