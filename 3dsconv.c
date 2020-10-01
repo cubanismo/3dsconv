@@ -273,7 +273,7 @@ main(int argc, char **argv)
 		CheckUncoloredFaces( &objtab[i] );
 
 	return write_output_file( outfilename );
-	return 0;
+//	return 0;
 }
 
 /*************************************************************************
