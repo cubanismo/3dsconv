@@ -95,6 +95,10 @@ static uint8_t *getchunkfromset(uint8_t*, uint8_t *, unsigned *, long *, unsigne
 static uint8_t *get3dpoint(uint8_t *, double *, double *, double *);
 static int buildkfdata(uint8_t *, uint8_t *);
 
+#ifdef _WIN32
+#define strdup _strdup
+#endif
+
 /*
  *	read 3d studio file into internal format
  *	returns: 0 on success, otherwise -1
@@ -336,7 +340,7 @@ buildfacerecs(mstart, mend)
 	int numverts;
 	int numpolys;
 	char *matname;			/* material name */
-	Object *curobj;
+	Object *curobj = NULL;
 	Matrix M;			/* orientation matrix */
 	extern char *defaultlabel;
 	extern int clabels;
@@ -487,7 +491,7 @@ static	uint8_t
 	uint8_t *ntriobj;		/* n-tri object */
 	uint8_t *p;			/* points array */
 	int i;
-	char *objname;
+	char *objname = NULL;
 
 	/*
 	 *	let's find a named, n-tri object

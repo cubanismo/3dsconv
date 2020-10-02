@@ -32,6 +32,9 @@
 
 #ifndef _WIN32
 #define stricmp strcasecmp
+#else
+#define strdup _strdup
+#define stricmp _stricmp
 #endif
 
 #include "internal.h"
@@ -80,8 +83,8 @@ usage( char *errmsg )
 	fprintf(stderr, "Usage: %s [-o outfile][-l label][-f format][-scale scale] {options} inputfile\n", progname);
 	fprintf(stderr, "Valid options are:\n");
 	fprintf(stderr, "  -clabels:    Add an underbar to labels (default for -f new)\n");
-	fprintf(stderr, "  -multiobj:	Output multiple objects, rather than merging all named objects\n");
-	fprintf(stderr, "  -noclabels:	Do not add underbars to labels (default for -f old)\n");
+	fprintf(stderr, "  -multiobj:   Output multiple objects, rather than merging all named objects\n");
+	fprintf(stderr, "  -noclabels:  Do not add underbars to labels (default for -f old)\n");
 	fprintf(stderr, "  -noheader:   Do not output .data header or .include commands at start of file\n");
 	fprintf(stderr, "  -textseg:    Put model in text segment, instead of data segment\n");
 	fprintf(stderr, "  -triangles:  Do not merge triangles into polygons\n");
@@ -270,7 +273,7 @@ main(int argc, char **argv)
 		CheckUncoloredFaces( &objtab[i] );
 
 	return write_output_file( outfilename );
-	return 0;
+//	return 0;
 }
 
 /*************************************************************************

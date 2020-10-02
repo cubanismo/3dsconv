@@ -33,7 +33,9 @@ Object *FindObject P_((char *name));
 Object *FixObjectLists P_((void));
 Matrix MMult(Matrix A, Matrix B);
 Matrix MatInv(Matrix M);
+#if !defined(atarist) && !defined(_WIN32)
 double rint P_((double));
+#endif
 
 /* jagout.c */
 int JAGwritefile P_((FILE *f, Object *));

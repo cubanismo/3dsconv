@@ -14,6 +14,10 @@
 #define myfree free
 #endif
 
+#ifdef _WIN32
+#define strdup _strdup
+#endif
+
 #define EXTERN
 #include "internal.h"
 
@@ -629,7 +633,7 @@ MatInv(Matrix M)
 	return MMult(B, A);
 }
 
-#ifndef atarist
+#if !defined(atarist) && !defined(_WIN32)
 double rint(double x)
 {
 	return floor( x + 0.5 );

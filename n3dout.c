@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include "internal.h"
 #include "proto.h"
+#include <stdint.h>
 
 extern int animflag;
 
