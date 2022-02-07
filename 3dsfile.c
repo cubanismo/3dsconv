@@ -40,17 +40,17 @@ extern int	multiobject;		/* output multiple objects? */
 extern int	animflag;		/* get animation data? */
 
 /* Global variables */
-uint8_t	*fbuf;				/* buffer for loading 3ds file, */
+static uint8_t	*fbuf;				/* buffer for loading 3ds file, */
 					/* will be allocated */
-uint8_t	*fbufend;			/* pts to the end of the buffer */
-long	fbufsize;			/* size of the buffer */
+static uint8_t	*fbufend;			/* pts to the end of the buffer */
+static long	fbufsize;			/* size of the buffer */
 
-uint8_t	*mdata;				/* start of mesh data section */
-uint8_t	*mdataend;			/* end of mdata */
-uint8_t	*kfdata;			/* start of key frame data section */
-uint8_t	*kfdataend;
+static uint8_t	*mdata;				/* start of mesh data section */
+static uint8_t	*mdataend;			/* end of mdata */
+static uint8_t	*kfdata;			/* start of key frame data section */
+static uint8_t	*kfdataend;
 
-double	scale;				/* scale factor from 3DS file */
+static double	scale;				/* scale factor from 3DS file */
 
 
 typedef struct color {
