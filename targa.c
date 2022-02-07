@@ -7,6 +7,9 @@
 #include <string.h>
 #include <stdint.h>
 #include <sys/types.h>
+#ifndef _WIN32
+#include <dirent.h>
+#endif
 #include "internal.h"
 
 

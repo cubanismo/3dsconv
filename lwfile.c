@@ -27,7 +27,7 @@ extern int	verbose;		/* -v flag specified? */
 extern int	multiobject;		/* output multiple objects? */
 
 /* Global variables */
-double	scale;				/* scale factor from 3DS file */
+static double	scale;				/* scale factor from 3DS file */
 
 typedef struct color {
 	double red, green, blue;
