@@ -5,14 +5,22 @@ into the Jaguar 3D model format.  The output is an assembly file containing
 the 3D data which after assembling it can be linked with the final program.
 The file name of the output file will have the file extention ".N3D".
 
+Launching 3dsconv, without arguments, will also display the usage information.
+
 
 Usage: 
-	3dsconv [-f format][-l label][-o outfile][-scale scale][-textseg][-triangles][-verbose] filename
+	3dsconv [-f format][-l label][-o outfile][-scale scale] {options} filename
 
 	-f format	specify output data format
 	-l label	label option, assign a label
 	-o outfile	assign an output file name
 	-scale scale	re-scale the output vertices
+
+Options:
+	-clabels	add an underbar character to labels
+	-multiobj	output multiple objects
+	-noclabels	do not add an underbar character to labels
+	-noheader	do not output .data header or .include commands at start of file
 	-textseg	do not output a ".data" declaration
 	-triangles	do not combine faces
 	-verbose	print lots of messages about what's going on
@@ -46,6 +54,22 @@ OPTIONS
 	be multiplied. The default is 1.0; values greater than this
 	will cause the model to get bigger, and less than this will
 	cause the model to get smaller.
+
+-clabels
+	Option to add an underbar character at the beginning of the
+	labels. This is the default when using -f new.
+
+-multiobj
+	Option to output multiple objects, rather than merging all
+	named objects.
+
+-noclabels
+	Option to not add an underbar character at the beginning of
+	the labels. This is the default when using -f old.
+
+-noheader
+	Option to not output .data header or .include commands at
+	start of the file.
 
 -textseg
 	No Data Option. Suppresses the output of the `.data' command

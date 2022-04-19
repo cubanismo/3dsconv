@@ -82,19 +82,20 @@ usage( char *errmsg )
 	fprintf(stderr, "%s Version %s\n", progname, VERSION);
 	fprintf(stderr, "Usage: %s [-o outfile][-l label][-f format][-scale scale] {options} inputfile\n", progname);
 	fprintf(stderr, "Valid options are:\n");
-	fprintf(stderr, "  -clabels:    Add an underbar to labels (default for -f new)\n");
-	fprintf(stderr, "  -multiobj:   Output multiple objects, rather than merging all named objects\n");
-	fprintf(stderr, "  -noclabels:  Do not add underbars to labels (default for -f old)\n");
-	fprintf(stderr, "  -noheader:   Do not output .data header or .include commands at start of file\n");
-	fprintf(stderr, "  -textseg:    Put model in text segment, instead of data segment\n");
-	fprintf(stderr, "  -triangles:  Do not merge triangles into polygons\n");
-	fprintf(stderr, "  -verbose:    Print messages about what is going on\n");
+	fprintf(stderr, "  -clabels:       Add an underbar to labels (default for -f new)\n");
+	fprintf(stderr, "  -multiobj:      Output multiple objects, rather than merging all named objects\n");
+	fprintf(stderr, "  -noclabels:     Do not add an underbar to labels (default for -f old)\n");
+	fprintf(stderr, "  -noheader:      Do not output .data header or .include commands at start of file\n");
+	fprintf(stderr, "  -textseg:       Put model in text segment, instead of data segment\n");
+	fprintf(stderr, "  -triangles:     Do not merge triangles into polygons\n");
+	fprintf(stderr, "  -verbose:       Print messages about what is going on\n");
 	fprintf(stderr, "\n");
 	fprintf(stderr, "In the -f command, 'format' must be one of:\n");
-	fprintf(stderr, "  a3d          Animation format\n");
-	fprintf(stderr, "  n3d          New 3D library output format\n");
-	fprintf(stderr, "  j3d          Original jaguar 3D library format\n");
-	fprintf(stderr, "  c            C data file\n");
+	fprintf(stderr, "  anim or a3d:    Animation format\n");
+	fprintf(stderr, "  new or n3d:     New 3D library output format\n");
+	fprintf(stderr, "  old or j3d:     Original jaguar 3D library format\n");
+	fprintf(stderr, "  cf or cfloat:   C data, using float, file\n");
+	fprintf(stderr, "  c or c3d:       C data file\n");
 	exit(1);
 }
 
